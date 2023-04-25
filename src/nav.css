@@ -1,0 +1,8 @@
+.logo {
+    float: left;
+    width: 150px;
+    margin-right: 40px;
+  }
+  .logo img{
+    max-width: 110%;
+  }

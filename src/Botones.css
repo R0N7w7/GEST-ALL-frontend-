@@ -1,0 +1,7 @@
+.btnEditar:hover .button-icon {
+    color: #ffbc2b;
+}
+
+.btnEliminar:hover .button-icon {
+    color: #f05656;
+}

@@ -1,0 +1,12 @@
+.FloatBtn{
+    background-color: #dde8fd;
+}
+:where(.css-dev-only-do-not-override-1fviqcj).ant-input-affix-wrapper-lg {
+    padding: 7px 11px;
+    font-size: 16px;
+    line-height: 1.5;
+    border-radius: 0px;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+}
