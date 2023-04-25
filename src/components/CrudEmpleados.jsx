@@ -159,7 +159,7 @@ function C_TablaEmpleados() {
                 }}
             />
             <C_ModalEditEmp
-                id={empleadoSeleccionado==empleadoEliminar?0:empleadoSeleccionado}
+                id={empleadoSeleccionado}
                 abrirModal={modalEditOpen}
                 cerrarModal={() => {
                     setModalEditOpen(false);
