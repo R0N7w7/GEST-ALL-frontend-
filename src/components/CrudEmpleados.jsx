@@ -164,9 +164,11 @@ function C_TablaEmpleados() {
                 cerrarModal={() => {
                     setModalEditOpen(false);
                     actualizarDatosTabla(); // se llama a la función para actualizar la tabla
+                    setEmpleadoSeleccionado(0);
                 }}
                 cancelarModal={() => {
                     setModalEditOpen(false);
+                    setEmpleadoEliminar(0)
                 }}
                 actualizar={new Date().getTime()}
             />

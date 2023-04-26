@@ -23,7 +23,7 @@ function App() {
             <C_Sider />
           </Sider>
           <Content style={{ margin: '24px 16px 0' }}>
-            {crudEmpleados}
+            <C_TablaEmpleados />
             <Footer style={{ textAlign: 'center', marginTop: '2vh' }}>
               RojanTech ©2023
             </Footer>
@@ -34,4 +34,5 @@ function App() {
     </div>
   )
 }
-export default App
+
+export default App;

@@ -15,7 +15,7 @@ function C_ModalEditEmp(props) {
             const empleado = await response.json();
             return empleado;
         } catch (error) {
-            console.error(`Error al obtener empleado con ID ${id}:`, error);
+            console.error(error);
         }
     }
 
@@ -25,17 +25,26 @@ function C_ModalEditEmp(props) {
     //por ende necesita esperar, definido por la variable isloading
     React.useEffect(() => {
         setIsLoading(true); // indicar que la carga está en progreso
-        getEmpleadoById(id)
-            .then((data) => {
-                setEmpleado(data);
-            })
-            .catch((error) => {
-                console.error(`Error al obtener empleado con ID ${id}:`, error);
-            })
-            .finally(() => {
-                setIsLoading(false); // indicar que la carga ha finalizado
-            });
-    }, [id,actualizar]);
+        try {
+            getEmpleadoById(id)
+                .then((data) => {
+                    if (Object.keys(data).length === 0) {   
+                    } else {
+                        setEmpleado(data);
+                    }
+                })
+                .catch((error) => {
+                    console.error(`Error al obtener empleado con ID ${id}:`, error);
+                })
+                .finally(() => {
+                    setIsLoading(false); // indicar que la carga ha finalizado
+                });
+        } catch (error) {
+            console.log(error)
+        }
+
+    }, [id, actualizar]);
+
 
     // Solamente Dios sabe porque esto de acá funciona
     if (isLoading) {
