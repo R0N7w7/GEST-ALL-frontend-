@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, Tooltip, ConfigProvider } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-import '../Botones.css';
+import './Botones.css';
 function C_BtnEdit(props) {
     return (
         <ConfigProvider theme={{ token: { colorPrimary: '#ffbc2b' } }}>

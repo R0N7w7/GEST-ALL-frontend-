@@ -1,6 +1,5 @@
 import { Modal } from 'antd';
-import '../ModalAgregar.css'
-import C_FormEdit from './FormEditar';
+import './ModalAgregar.css'
 import C_FormAdd from './FormAgregar';
 function C_ModalAddEmp(props) {
     return (

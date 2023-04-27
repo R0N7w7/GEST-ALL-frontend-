@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, ConfigProvider } from 'antd';
 import { UserAddOutlined, EditFilled } from '@ant-design/icons';
-import '../Botones.css';
+import './Botones.css';
 function C_BtnAdd(props) {
     return (
         <ConfigProvider theme={{ token: { colorPrimary: props.texto=="editar"?'#FAE03E':'#82A8D9'} } }>

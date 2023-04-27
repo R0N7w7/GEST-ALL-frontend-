@@ -1,0 +1,15 @@
+.btnEditar:hover .button-icon {
+    color: #ffbc2b;
+}
+
+.btnEliminar:hover .button-icon {
+    color: #f05656;
+}
+
+.btnGuardar:hover .button-icon {
+    color: #82d3eb;
+}
+.btnGuardar{
+    color:#56abf0;
+    font-size: large;
+}

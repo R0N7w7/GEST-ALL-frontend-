@@ -1,5 +1,5 @@
 import React from 'react';
-import '../ModalAgregar.css'
+import './ModalAgregar.css'
 import { FloatButton } from 'antd';
 import { PlusCircleOutlined } from '@ant-design/icons';
 function C_FButton(props) {

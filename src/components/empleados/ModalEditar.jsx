@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import '../ModalAgregar.css'
+import './ModalAgregar.css'
 import C_FormEdit from './FormEditar';
 import React from 'react';
 

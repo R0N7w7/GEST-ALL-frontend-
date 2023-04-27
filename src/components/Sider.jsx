@@ -1,6 +1,7 @@
 import { DesktopOutlined, PieChartOutlined, UserOutlined, TeamOutlined } from '@ant-design/icons';
 import { Menu } from 'antd';
 import { React } from 'react';
+import { Link, Route } from 'react-router-dom';
 function getItem(label, key, icon, children) {
     return {
       key,
@@ -11,8 +12,8 @@ function getItem(label, key, icon, children) {
   }
   //* Items del Sider
   const itemsSider = [
-    getItem('Empleados', '1', <TeamOutlined />),
-    getItem('Asistencias', '2', <DesktopOutlined />),
+    getItem('Empleados', '1', <Link to={"/empleados"}><TeamOutlined /></Link>),
+    getItem('Asistencias', '2', <Link to={"/asistencias"}><DesktopOutlined /></Link>),
     getItem('Nóminas', '3', <PieChartOutlined />),
     getItem('Usuario', 'sub1', <UserOutlined />, [
       getItem('Modificar', '4'),
