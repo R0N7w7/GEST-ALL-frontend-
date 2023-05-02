@@ -1,8 +1,6 @@
 import { Modal } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-function mensaje() {
-    console.log('Datos eliminados');
-}
+
 function C_ModalElim(props) {
     // Eliminar un empleado existente
     async function deleteEmpleado(id) {

@@ -1,0 +1,24 @@
+.btnEditar:hover .button-icon {
+    color: #ffbc2b;
+}
+
+.btnEliminar:hover .button-icon {
+    color: #f13232;
+}
+
+.btnGuardar:hover .button-icon {
+    color: #50caef;
+
+}
+
+.btnGuardar:active .button-icon{
+    color:#b1dcff;
+}
+
+.btnEliminar:active .button-icon{
+    color:#fba3a3;
+}
+
+.btnEditar:active .button-icon{
+    color:#f6d388;
+}

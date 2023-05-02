@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from 'react';
 import { Table, Typography, Space } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, DollarOutlined } from '@ant-design/icons';
 import C_BtnDelete from "./EliminarButton";
 import C_BtnEdit from "./EditarButton";
 import C_FButton from "./FloatButton";

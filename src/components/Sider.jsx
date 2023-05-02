@@ -14,7 +14,7 @@ function getItem(label, key, icon, children) {
   const itemsSider = [
     getItem('Empleados', '1', <Link to={"/empleados"}><TeamOutlined /></Link>),
     getItem('Asistencias', '2', <Link to={"/asistencias"}><DesktopOutlined /></Link>),
-    getItem('Nóminas', '3', <PieChartOutlined />),
+    getItem('Nóminas', '3',  <Link to={"/nominas"}><PieChartOutlined /></Link>),
     getItem('Usuario', 'sub1', <UserOutlined />, [
       getItem('Modificar', '4'),
       getItem('Opción extra', '5'),

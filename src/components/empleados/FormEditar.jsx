@@ -8,7 +8,7 @@ import { UserOutlined, AlignLeftOutlined, PhoneOutlined, DollarOutlined } from '
 import { React, useState, useEffect } from 'react';
 import C_BtnAdd from './AgregarButton';
 
-// Actualioza un empleadoadfc fff78
+// Actualioza un empleado
 async function updateEmpleado(id_empleado,empleado) {
     try {
         const timestamp = new Date().getTime();

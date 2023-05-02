@@ -9,6 +9,7 @@ import C_ModalAddEmp from './empleados/ModalAgregar';
 import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import C_Asistencias from './asistencias/Asistencias';
+import C_Nominas from './nominas/Nominas';
 
 function MainLayout() {
     const [collapsed, setCollapsed] = useState(false);
@@ -25,7 +26,7 @@ function MainLayout() {
                     <Routes>
                         <Route path='/empleados' element = {<C_TablaEmpleados/>} />
                         <Route path='/asistencias' element = {<C_Asistencias />} />
-                        <Route path='/nominas' element={<C_TablaEmpleados />} />
+                        <Route path='/nominas' element={<C_Nominas />} />
                         <Route path='*' element={<h1 className='error danger'>Pagina no encontrada</h1>} />
                     </Routes>
                     <Footer style={{ textAlign: 'center', marginTop: '2vh' }}>
