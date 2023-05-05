@@ -113,7 +113,7 @@ function C_Nominas() {
     //Función que elimina todas las nominas de un rango
     async function deleteNominasRange(fechaInicio, fechaFin) {
         try {
-            const response = await fetch(`http://localhost:4000/API/nomina/${fechaInicio}/${fechaFin}`, {
+            const response = await fetch(`http://localhost:4000/API/nomina/rango/${fechaInicio}/${fechaFin}`, {
                 method: 'DELETE'
             });
             const NominaEliminada = await response.json();
