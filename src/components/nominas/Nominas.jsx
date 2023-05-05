@@ -69,6 +69,7 @@ function C_Nominas() {
         try {
             const response = await fetch('http://localhost:4000/API/nomina/distinct-date-ranges');
             const rangos = await response.json();
+
             return rangos.data;
         } catch (error) {
             message.error("No fue posible cargar las nominas...", [5])
@@ -400,7 +401,7 @@ function C_Nominas() {
             const env = listaRangos.map((rango, index) => {
                 const { fecha_inicio, fecha_fin } = rango;
                 return {
-                    label: `${fecha_inicio}   ---   ${fecha_fin}`,
+                    label: `De ${dateformat(fecha_inicio)} hasta ${dateformat(fecha_fin)}`,
                     value: index,
                     ref: rango
                 }
@@ -420,7 +421,7 @@ function C_Nominas() {
             {/* TITULO */}
             <Typography.Title level={3} style={{ color: '#82A8D9' }}>
                 <DollarOutlined style={{ color: '#82A8D9' }} /> Nóminas:
-                {(fechaInicioSel != "" && fechaFinSel != "") ? ` De ${fechaInicioSel} hasta ${fechaFinSel}` : ""}
+                {(fechaInicioSel != "" && fechaFinSel != "") ? ` De ${dateformat(fechaInicioSel)} hasta ${dateformat(fechaFinSel)}` : ""}
             </Typography.Title>
 
 
@@ -483,3 +484,20 @@ function C_Nominas() {
     );
 }
 export default C_Nominas;
+
+//Formatter para fecha
+function dateformat(fecha) {
+        let fecha_str = fecha;
+        let partes_fecha = fecha_str.split("-");
+        let fechaFormat = new Date(partes_fecha[0], partes_fecha[1] - 1, partes_fecha[2]);
+        let meses = [
+            "enero", "febrero", "marzo", "abril", "mayo", "junio",
+            "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"
+        ];
+        let dia = fechaFormat.getDate();
+        let mes = meses[fechaFormat.getMonth()];
+        let anio = fechaFormat.getFullYear();
+        let fecha_formateada = `${dia} de ${mes}, ${anio}`;
+        console.log(fecha_formateada)
+        return fecha_formateada;
+}
