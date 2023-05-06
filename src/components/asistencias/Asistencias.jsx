@@ -1,5 +1,5 @@
 import { React, useCallback, useState } from 'react';
-import { Table, Typography, Row, Col, Switch, Button, Empty } from 'antd';
+import { Table, Typography, Row, Col, Switch, Button, Empty, message } from 'antd';
 import { DatePicker, Tooltip, Card } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import { SaveOutlined, FileAddOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -164,9 +164,11 @@ function C_Asistencias() {
             try {
                 const asistenciaActualizada = await updateAsistencia(asistencia.id_asistencia, asistencia);
             } catch (error) {
+                message.error("Los cambios no se guardaron correctamente")
                 console.log(`No fue posible actualizar ${error}`);
             }
         });
+        message.success("Cambios guardados");
     }
 
     async function eliminarAsistencia() {
@@ -184,7 +186,6 @@ function C_Asistencias() {
     function toggleActivo(key, checked) {
         setData((data) =>
             data.map((record) => {
-                console.log(record);
                 const props = record.horaEntrada.props;
                 const props2 = record.horaSalida.props;
                 const props3 = record.horasTrabajadas.props;
@@ -255,7 +256,7 @@ function C_Asistencias() {
                 if (record.key === key) {
                     return {
                         ...record,
-                        horasTrabajadas: { ...horasTrabajadas, props: { ...props, value: e.target.value } }
+                        horasTrabajadas: { ...horasTrabajadas, props: { ...props, value: e.target.value.trim() == "" ? 0 : e.target.value } }
                     };
                 } else {
                     return record;
@@ -273,7 +274,7 @@ function C_Asistencias() {
                 if (record.key === key) {
                     return {
                         ...record,
-                        horasExtra: { ...horasExtra, props: { ...props, value: e.target.value } }
+                        horasExtra: { ...horasExtra, props: { ...props, value: e.target.value.trim() == "" ? 0 : e.target.value } }
                     };
                 } else {
                     return record;

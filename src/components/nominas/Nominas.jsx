@@ -1,27 +1,17 @@
-import { React } from 'react';
-import { Table, Typography, Row, Col } from 'antd';
-import { DollarOutlined } from '@ant-design/icons';
+import { React, useState, useEffect } from 'react';
+import { Table, Typography, Row, Col, Select, message, Card, Tooltip, Modal, Empty } from 'antd';
+import { DollarOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import C_CardFechaRango from './CardFechaNom';
 import C_BonosDesc from './InputDineros';
-//Datos de las filas
-let datos = []
-for (let i = 0; i < 30; i++) {
-    datos.push({
-        key: i,
-        matricula: 40 + i,
-        nombre: 'Jade Aguilar',
-        salBase: 20,
-        salExtra: 22,
-        descuento: <C_BonosDesc/>,
-        bono: <C_BonosDesc/>,
-        total: 599
-    },)
-}
+import C_CardSelector from './CardSelector';
+import "../Botones.css";
+
+const { Meta } = Card;
 //columnas
 const columns = [
     {
         title: 'Matrícula',
-        dataIndex: 'matricula',
+        dataIndex: 'id_empleado',
         width: '5%',
     },
     {
@@ -31,12 +21,12 @@ const columns = [
     },
     {
         title: 'Salario base',
-        dataIndex: 'salBase',
+        dataIndex: 'salario_base',
         width: '5%',
     },
     {
         title: 'Salario Extra',
-        dataIndex: 'salExtra',
+        dataIndex: 'salario_extra',
         width: '5%',
     },
     {
@@ -57,8 +47,36 @@ const columns = [
 ];
 // CONTENIDO NÓMINAS
 function C_Nominas() {
+    const [opciones, setOpciones] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const paginationOptions={
+    //sirven para generar las nominas con el selector de rango
+    const [fechaI, setFechaI] = useState("");
+    const [fechaF, setFechaF] = useState("");
+
+    //Sirven para modificar y eliminar con el ComboBox
+    const [fechaInicioSel, setFechaInicioSel] = useState("");
+    const [fechaFinSel, setFechaFinSel] = useState("");
+
+    //Sirve para alamacenar la selcciond el comboBox
+    const [seleccion, setSeleccion] = useState(undefined);
+
+    const [data, setData] = useState(null);
+
+    //funcion que se tare todos los rangos de fecha en la BD
+    //Sirve para llenar el selector de consulta
+    async function llenarSelect() {
+        try {
+            const response = await fetch('http://localhost:4000/API/nomina/distinct-date-ranges');
+            const rangos = await response.json();
+            return rangos.data;
+        } catch (error) {
+            message.error("No fue posible cargar las nominas...", [5])
+        }
+    }
+
+    //Configura la paginación de la tabla
+    const paginationOptions = {
         pageSizeOptions: [
             '10', '20', '30', '40'
         ],
@@ -66,22 +84,208 @@ function C_Nominas() {
             items_per_page: '/ página',
         },
         showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} elementos`,
-        position: ['topRight'], //! Posición de la paginación. Para regresar a la esquina superior derecha borrar esta línea
         showSizeChanger: true,
     }
 
-    
     //Funcion que trae todas las nominas de un rango
     async function getNominas(fecha_inicio, fecha_fin) {
         try {
-            const response = await fetch(`http://localhost:4000/API/nomina/${fecha_inicio}/${fecha_fin}`);
+            const response = await fetch(`http://localhost:4000/API/nomina/fecha/${fecha_inicio}/${fecha_fin}`);
             const nominas = await response.json();
-            return nominas;
+            return nominas.data;
         } catch (error) {
-            console.error('Error al obtener nominas:', error);
+            console.log('Error al obtener nominas:', error);
         }
     }
-    
+
+    //Funcion que se trae todos los empleados de la BD
+    async function getEmpleados() {
+        try {
+            const response = await fetch('http://localhost:4000/API/empleado/');
+            const empleados = await response.json();
+            return empleados;
+        } catch (error) {
+            console.error('Error al obtener empleados:', error);
+        }
+    }
+
+    //Función que elimina todas las nominas de un rango
+    async function deleteNominasRange(fechaInicio, fechaFin) {
+        try {
+            const response = await fetch(`http://localhost:4000/API/nomina/${fechaInicio}/${fechaFin}`, {
+                method: 'DELETE'
+            });
+            const NominaEliminada = await response.json();
+            return NominaEliminada;
+        } catch (error) {
+            console.error(`Error al eliminar las nóminas:`, error);
+        }
+    }
+
+    //Función que crea una nomina
+    async function createNomina(nomina) {
+        try {
+            const response = await fetch('http://localhost:4000/API/nomina/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(nomina)
+            });
+            const nuevaNomina = await response.json();
+            return nuevaNomina;
+        } catch (error) {
+            console.error('Error al crear nómina:', error);
+        }
+    }
+
+    //Muestra las nominas en base a un objeto que contiene la fecha de inicio y la fecha de fin
+    async function mostrarNominas(index, value) {
+        setIsLoading(true);
+        //para el caso en que se encesite limpiar la tabla
+        if (value == null) {
+            setData([]);
+            setFechaFinSel("");
+            setFechaInicioSel("");
+            setIsLoading(false);
+            return;
+        }
+        setSeleccion(value);
+        //para cambiar los datos de la tabla
+        if (value.ref) {
+            const { fecha_inicio, fecha_fin } = value.ref;
+            try {
+                const listaNominas = await getNominas(fecha_inicio, fecha_fin);
+                const env = listaNominas.map(nomina => {
+                    const { id_empleado, empleado: { nombre, apellido_paterno }, salario_base, salario_extra, descuento, bono, total } = nomina;
+                    return {
+                        key: id_empleado,
+                        id_empleado,
+                        nombre: `${nombre} ${apellido_paterno}`,
+                        salario_base,
+                        salario_extra,
+                        descuento,
+                        bono,
+                        total
+                    }
+                });
+                setData(env);
+                setFechaInicioSel(fecha_inicio);
+                setFechaFinSel(fecha_fin);
+            } catch (error) {
+                console.log(`No fue posible listar las asistencias ${error}`)
+            }
+        }
+        setIsLoading(false);
+    }
+
+    //actualiza el rango de fechas seleccionado
+    function handleRango(dates, dateStrings) {
+        const [fechaInicio, fechaFin] = dateStrings;
+        setFechaI(fechaInicio);
+        setFechaF(fechaFin);
+    }
+
+    //Abre un modal que llama a la funcion de crear nominas
+    async function modalGenerar() {
+        if (fechaI != "" && fechaF != "") {
+            Modal.confirm({
+                title: "Confirmar operación",
+                content: `¿Deseas generar las nóminas en el rango seleccionado?`,
+                okText: "Generar",
+                cancelText: "Cancelar",
+                okType: 'primary',
+                centered: true,
+                onOk: crearNominas
+            });
+        } else {
+            message.error("Se debe seleccionar un rango de fechas en primer lugar");
+        }
+    }
+
+    //Abre un modal que llama a la funcion de eliminar nominas
+    async function modalEliminar() {
+        if (fechaInicioSel != "" && fechaFinSel != "") {
+            Modal.confirm({
+                title: "Confirmar operación",
+                content: `¿Deseas eliminar las nóminas de ${fechaInicioSel} hasta ${fechaFinSel}?`,
+                okText: "Eliminar",
+                cancelText: "Cancelar",
+                okType: 'danger',
+                centered: true,
+                onOk: eliminarNominas
+            });
+        }
+    }
+
+    //Crea una nomina por cada empleado en la BD con datos por defecto
+    async function crearNominas() {
+        if (fechaI != "" && fechaF != "") {
+
+            try {
+                const prevNomina = await getNominas(fechaI, fechaF);
+                if (prevNomina.length) {
+                    message.error("La nomina para este rango de fechas ya se ha creado previamente");
+                    return
+                }
+                const listaEmpleados = await getEmpleados();
+                listaEmpleados.forEach(async empleado => {
+                    const { id_empleado } = empleado;
+                    const datosNomina = {
+                        id_empleado,
+                        fecha_inicio: fechaI,
+                        fecha_fin: fechaF
+                    }
+                    try {
+                        const nuevaNomina = await createNomina(datosNomina);
+                        const value = {
+                            ref: {
+                                fecha_inicio: fechaI,
+                                fecha_fin: fechaF,
+                            }
+                        }
+                        mostrarNominas(null, value);
+                    } catch (error) {
+                        message.error("No fue posible generar las nominas en ese rango de fechas");
+                        console.error(error);
+                    }
+                });
+            } catch (error) {
+                message.error("No fue obtener la lista de empleados");
+                console.error(error);
+            }
+        }
+    }
+
+    //Elimina las nominas de un rango seleccionado:
+    async function eliminarNominas() {
+        if (fechaFinSel != "" && fechaInicioSel != "") {
+            try {
+                const nominasEliminadas = await deleteNominasRange(fechaInicioSel, fechaFinSel);
+                mostrarNominas(null, null);
+                setSeleccion(undefined);
+            } catch (error) {
+
+            }
+        }
+    }
+
+    //useEffect que actualiza el selector de rangos para consulta de nominas
+    //Actualioza los datos de la tabla cada que selecciona una fecha distinta
+    useEffect(() => {
+        const fetchRangos = async () => {
+            const listaRangos = await llenarSelect();
+            const env = listaRangos.map((rango, index) => {
+                const { fecha_inicio, fecha_fin } = rango;
+                return {
+                    label: `${fecha_inicio}   ---   ${fecha_fin}`,
+                    value: index,
+                    ref: rango
+                }
+            });
+            setOpciones(env);
+        }
+        fetchRangos();
+    }, [data]);
+
     return (
         <div
             style={{
@@ -91,7 +295,8 @@ function C_Nominas() {
             }}>
             {/* TITULO */}
             <Typography.Title level={3} style={{ color: '#82A8D9' }}>
-                <DollarOutlined style={{ color: '#82A8D9' }} />Generador de nóminas
+                <DollarOutlined style={{ color: '#82A8D9' }} /> Nóminas:
+                {(fechaInicioSel != "" && fechaFinSel != "") ? ` De ${fechaInicioSel} hasta ${fechaFinSel}` : ""}
             </Typography.Title>
 
 
@@ -100,16 +305,55 @@ function C_Nominas() {
                 {/* las propiedades xs, sm, md... hacen responsive el contenido  */}
                 <Col xs={24} sm={24} md={24} lg={17} xl={17}>
                     <Table
+                        loading={isLoading}
                         columns={columns}
-                        dataSource={datos}
+                        dataSource={data}
                         scroll={{ x: true }}
                         //* Las opciones de paginación fueron reemplazadas
                         pagination={paginationOptions}
                     />
                 </Col>
                 <Col xs={24} sm={{ span: 16, offset: 4 }} md={{ span: 14, offset: 5 }} lg={{ span: 7, offset: 0 }} xl={{ span: 7, offset: 0 }}>
-                    <C_CardFechaRango />
+                    <C_CardFechaRango
+                        onChange={handleRango}
+                        onClick={modalGenerar}
+                    />
+                    <Card
+                        style={{ width: "100%", marginLeft: 10, marginTop: 15 }}
+                        actions={[
+                            <Tooltip title="Guardar" placement="bottom">
+                                <div className='btnGuardar' onClick={() => modalGuardar}>
+                                    <SaveOutlined key="guardar" className="button-icon" />
+                                </div>
+                            </Tooltip>,
+                            <Tooltip title="Eliminar" placement="bottom" >
+                                <div className='btnEliminar' onClick={modalEliminar}>
+                                    <DeleteOutlined key="eliminar" className="button-icon" />
+                                </div>
+                            </Tooltip>
+                        ]}
+                    >
+                        <Meta
+                            title="Buscar nómina"
+                            description={
+                                <div>
+                                    <p>Seleccione el rango de fechas</p>
+                                    <Select
+                                        placeholder="Seleccione una opción"
+                                        options={opciones}
+                                        style={{ width: "100%" }}
+                                        id='selectRango'
+                                        onChange={mostrarNominas}
+                                        notFoundContent={<Empty description="No hay nóminas para mostrar"></Empty>}
+                                        allowClear={true}
+                                        value={seleccion}
+                                    />
+                                </div>
+                            }
+                        />
+                    </Card>
                 </Col>
+
             </Row>
         </div>
     );
