@@ -213,6 +213,11 @@ function C_Asistencias() {
 
     //Actualiza el value de la hora de entrada
     function blurHoraEntrada(key, e) {
+        const regexHora = /^(0\d|1\d|2[0-3]):([0-5]\d)$/;
+        let valor = e.target.value;
+        if (!regexHora.test(valor)) {
+            return;
+        }
         setData((data) =>
             data.map((record) => {
                 const horaEntrada = record.horaEntrada;
@@ -220,7 +225,7 @@ function C_Asistencias() {
                 if (record.key === key) {
                     return {
                         ...record,
-                        horaEntrada: { ...horaEntrada, props: { ...props, value: e.target.value } }
+                        horaEntrada: { ...horaEntrada, props: { ...props, value: valor } }
                     };
                 } else {
                     return record;
@@ -231,6 +236,11 @@ function C_Asistencias() {
 
     //Actualiza el value de la hora de entrada
     function blurHoraSalida(key, e) {
+        const regexHora = /^(0\d|1\d|2[0-3]):([0-5]\d)$/;
+        let valor = e.target.value;
+        if (!regexHora.test(valor)) {
+            return;
+        }
         setData((data) =>
             data.map((record) => {
                 const horaSalida = record.horaSalida;
@@ -238,7 +248,7 @@ function C_Asistencias() {
                 if (record.key === key) {
                     return {
                         ...record,
-                        horaSalida: { ...horaSalida, props: { ...props, value: e.target.value } }
+                        horaSalida: { ...horaSalida, props: { ...props, value: valor } }
                     };
                 } else {
                     return record;
@@ -249,6 +259,10 @@ function C_Asistencias() {
 
     //Actualiza el value de las horas trabajadas
     function blurHorasTrabajadas(key, e) {
+        let valor = e.target.value;
+        if (isNaN(valor) || valor<0 || valor > 14) {
+            return
+        }
         setData((data) =>
             data.map((record) => {
                 const horasTrabajadas = record.horasTrabajadas;
@@ -256,7 +270,7 @@ function C_Asistencias() {
                 if (record.key === key) {
                     return {
                         ...record,
-                        horasTrabajadas: { ...horasTrabajadas, props: { ...props, value: e.target.value.trim() == "" ? 0 : e.target.value } }
+                        horasTrabajadas: { ...horasTrabajadas, props: { ...props, value: valor } }
                     };
                 } else {
                     return record;
@@ -267,6 +281,10 @@ function C_Asistencias() {
 
     //Actualiza el value de las horas extra
     function blurHorasExtra(key, e) {
+        let valor = e.target.value;
+        if (isNaN(valor) || valor<0 || valor > 14) {
+            return
+        }
         setData((data) =>
             data.map((record) => {
                 const horasExtra = record.horasExtra;
@@ -274,7 +292,7 @@ function C_Asistencias() {
                 if (record.key === key) {
                     return {
                         ...record,
-                        horasExtra: { ...horasExtra, props: { ...props, value: e.target.value.trim() == "" ? 0 : e.target.value } }
+                        horasExtra: { ...horasExtra, props: { ...props, value: valor } }
                     };
                 } else {
                     return record;
