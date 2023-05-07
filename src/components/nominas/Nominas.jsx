@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react';
-import { Table, Typography, Row, Col, Select, message, Card, Tooltip, Modal, Empty } from 'antd';
+import { Table, Typography, Row, Col, Select, message, Card, Tooltip, Modal, Empty, InputNumber } from 'antd';
 import { DollarOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import C_CardFechaRango from './CardFechaNom';
 import C_BonosDesc from './InputDineros';
@@ -137,6 +137,70 @@ function C_Nominas() {
         }
     }
 
+    //Actualiza una nomina
+    async function updateNomina(id_nomina, datos) {
+        try {
+            const response = await fetch(`http://localhost:4000/API/nomina/${id_nomina}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            const nominaActualizada = await response.json();
+            return nominaActualizada;
+        } catch (error) {
+            console.error(`Error al actualizar la nómina ${id_nomina}:`, error);
+        }
+    }
+
+    //funcion que actualiza la data del descuento y el bono
+    //tambien da un preview del total
+    function blurInput(valor, id_nomina, tipo) {
+        setData((data) =>
+            data.map((record) => {
+                //console.log(record.bono.props.valor)
+                if (record.id_nomina === id_nomina) {
+                    let cantidad = Number(valor);
+                    if (isNaN(cantidad)) {
+                        cantidad = 0;
+                    }
+                    if (tipo == "descuento") {
+                        const salario = record.salario_base + record.salario_extra + record.bono.props.valor;
+                        const props = record.descuento.props;
+                        const descuento = record.descuento;
+                        return {
+                            ...record,
+                            total: salario - cantidad,
+                            descuento: {
+                                ...descuento,
+                                props: {
+                                    ...props,
+                                    valor: cantidad
+                                }
+                            }
+                        }
+                    } else {
+                        const salario = record.salario_base + record.salario_extra - record.descuento.props.valor;
+                        const props = record.bono.props;
+                        const bono = record.bono;
+                        return {
+                            ...record,
+                            total: salario + cantidad,
+                            bono: {
+                                ...bono,
+                                props: {
+                                    ...props,
+                                    valor: cantidad
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    return record;
+                }
+            }),
+        );
+    }
+
     //Muestra las nominas en base a un objeto que contiene la fecha de inicio y la fecha de fin
     async function mostrarNominas(index, value) {
         setIsLoading(true);
@@ -155,15 +219,36 @@ function C_Nominas() {
             try {
                 const listaNominas = await getNominas(fecha_inicio, fecha_fin);
                 const env = listaNominas.map(nomina => {
-                    const { id_empleado, empleado: { nombre, apellido_paterno }, salario_base, salario_extra, descuento, bono, total } = nomina;
+                    const { id_nomina, id_empleado, empleado: { nombre, apellido_paterno }, salario_base, salario_extra, descuento, bono, total } = nomina;
                     return {
                         key: id_empleado,
+                        id_nomina,
                         id_empleado,
                         nombre: `${nombre} ${apellido_paterno}`,
                         salario_base,
                         salario_extra,
-                        descuento,
-                        bono,
+                        descuento: <InputNumber
+                            key={new Date()}
+                            defaultValue={descuento}
+                            valor={descuento}
+                            min={0}
+                            max={6000}
+                            prefix={"$"}
+                            step={10}
+                            onChange={(valor) => { blurInput(valor, id_nomina, "descuento") }}
+                        />,
+                        bono:
+                            <InputNumber
+                                key={new Date()}
+                                defaultValue={bono}
+                                valor={bono}
+                                min={0}
+                                max={6000}
+                                prefix={"$"}
+                                step={10}
+                                onChange={(valor) => { blurInput(valor, id_nomina, "bono") }}
+                            />
+                        ,
                         total
                     }
                 });
@@ -216,6 +301,21 @@ function C_Nominas() {
         }
     }
 
+    //Abre un modal que llama a la función de actualizar nóminas
+    async function modalGuardar() {
+        if (fechaInicioSel != "" && fechaFinSel != "") {
+            Modal.confirm({
+                title: "Confirmar operación",
+                content: `¿Deseas guardar los cambios en las nóminas de ${fechaInicioSel} hasta ${fechaFinSel}?`,
+                okText: "Guardar",
+                cancelText: "Cancelar",
+                okType: 'primary',
+                centered: true,
+                onOk: guardarNominas
+            });
+        }
+    }
+
     //Crea una nomina por cada empleado en la BD con datos por defecto
     async function crearNominas() {
         if (fechaI != "" && fechaF != "") {
@@ -263,9 +363,33 @@ function C_Nominas() {
                 mostrarNominas(null, null);
                 setSeleccion(undefined);
             } catch (error) {
-
+                console.error(error);
             }
         }
+    }
+
+    //Actualiza las nominas con los datos de la tabla:
+    async function guardarNominas() {
+        const datosGuardar = data.map((record) => {
+            const { id_nomina, id_empleado, nombre, salario_base, salario_extra, descuento, bono, total } = record;
+            return {
+                id_nomina,
+                id_empleado,
+                salario_base,
+                salario_extra,
+                descuento: descuento.props.valor,
+                bono: bono.props.valor,
+                total
+            }
+        });
+        datosGuardar.forEach(async nominaGuardar => {
+            try {
+                const nominaActualizada = await updateNomina(nominaGuardar.id_nomina, nominaGuardar)
+            } catch (error) {
+                console.error(error);
+            }
+        })
+        message.success("Cambios guardados correctamente")
     }
 
     //useEffect que actualiza el selector de rangos para consulta de nominas
@@ -322,7 +446,7 @@ function C_Nominas() {
                         style={{ width: "100%", marginLeft: 10, marginTop: 15 }}
                         actions={[
                             <Tooltip title="Guardar" placement="bottom">
-                                <div className='btnGuardar' onClick={() => modalGuardar}>
+                                <div className='btnGuardar' onClick={modalGuardar}>
                                     <SaveOutlined key="guardar" className="button-icon" />
                                 </div>
                             </Tooltip>,
