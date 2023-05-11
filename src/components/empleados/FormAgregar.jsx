@@ -3,6 +3,7 @@ import {
     Form,
     Input,
     Row,
+    message,
 } from 'antd';
 import { UserOutlined, AlignLeftOutlined, PhoneOutlined, DollarOutlined } from '@ant-design/icons';
 import { React } from 'react';
@@ -11,18 +12,18 @@ import C_BtnAdd from './AgregarButton';
 // Crear un nuevo empleado
 async function createEmpleado(empleado) {
     try {
-      const response = await fetch('http://localhost:4000/API/empleado/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(empleado)
-      });
-      const nuevoEmpleado = await response.json();
-      return nuevoEmpleado;
+        const response = await fetch('http://localhost:4000/API/empleado/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(empleado)
+        });
+        const nuevoEmpleado = await response.json();
+        return nuevoEmpleado;
     } catch (error) {
-      console.error('Error al crear empleado:', error);
+        console.error('Error al crear empleado:', error);
     }
-  }
-  
+}
+
 
 function C_FormAdd(props) {
     return (
@@ -34,13 +35,14 @@ function C_FormAdd(props) {
             onFinish={(values) => {
                 const agregarEmpleado = async (empleado) => {
                     try {
-                        await createEmpleado(empleado);
+                        const empleadoCreado = await createEmpleado(empleado);
                     } catch (error) {
                         console.error("No fue posible insertar al empleado en la BD");
                     }
                 }
                 agregarEmpleado(values);
                 props.cerrarModal();
+                message.success("Empleado registrado correctamente");
             }}
             // * Si no se completan correctamente, arroja el error
             onFinishFailed={(error) => {
@@ -112,7 +114,7 @@ function C_FormAdd(props) {
                                 required: true,
                                 message: "Ingrese salario por hora",
                             },
-                            { pattern: /^\d{2}$/, message: 'Ingrese una cantidad válida' }
+                            { pattern: /^[0-9]{1,3}(\.[0-9]{1,2})?$/, message: 'Ingrese una cantidad válida' }
                         ]}
                         hasFeedback
                         style={{ marginRight: "5px" }}
@@ -130,7 +132,7 @@ function C_FormAdd(props) {
                                 required: true,
                                 message: "Ingrese salario por hora extra",
                             },
-                            { pattern: /^\d{2}$/, message: 'Ingrese una cantidad válida' }
+                            { pattern: /^[0-9]{1,3}(\.[0-9]{1,2})?$/, message: 'Ingrese una cantidad válida' }
                         ]}
                         hasFeedback
                         style={{ marginLeft: "5px" }}
@@ -141,7 +143,7 @@ function C_FormAdd(props) {
             </Row>
             <Form.Item>
                 <div style={{ textAlign: "right" }}>
-                    <C_BtnAdd/>
+                    <C_BtnAdd />
                 </div>
             </Form.Item>
         </Form>

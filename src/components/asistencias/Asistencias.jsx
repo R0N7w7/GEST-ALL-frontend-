@@ -180,7 +180,8 @@ function C_Asistencias() {
             } catch (error) {
                 console.log(`No fue posible eliminar las asistencias ${error}`);
             }
-        })
+        });
+        message.success("Asistencias eliminadas");
     }
 
     function toggleActivo(key, checked) {

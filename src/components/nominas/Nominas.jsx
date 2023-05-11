@@ -113,7 +113,7 @@ function C_Nominas() {
     //Función que elimina todas las nominas de un rango
     async function deleteNominasRange(fechaInicio, fechaFin) {
         try {
-            const response = await fetch(`http://localhost:4000/API/nomina/rango/${fechaInicio}/${fechaFin}`, {
+            const response = await fetch(`http://localhost:4000/API/nomina/rango/   ${fechaInicio}/${fechaFin}`, {
                 method: 'DELETE'
             });
             const NominaEliminada = await response.json();
@@ -158,7 +158,6 @@ function C_Nominas() {
     function blurInput(valor, id_nomina, tipo) {
         setData((data) =>
             data.map((record) => {
-                //console.log(record.bono.props.valor)
                 if (record.id_nomina === id_nomina) {
                     let cantidad = Number(valor);
                     if (isNaN(cantidad)) {
@@ -498,6 +497,5 @@ function dateformat(fecha) {
         let mes = meses[fechaFormat.getMonth()];
         let anio = fechaFormat.getFullYear();
         let fecha_formateada = `${dia} de ${mes}, ${anio}`;
-        console.log(fecha_formateada)
         return fecha_formateada;
 }

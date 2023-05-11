@@ -1,4 +1,4 @@
-import { Modal } from 'antd';
+import { Modal, message } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
 function C_ModalElim(props) {
@@ -12,6 +12,30 @@ function C_ModalElim(props) {
             return empleadoEliminado;
         } catch (error) {
             console.error(`Error al eliminar empleado con ID ${id}:`, error);
+        }
+    }
+
+    async function deleteAsistencias(id) {
+        try {
+            const response = await fetch(`http://localhost:4000/API/asistencia/empleado/${id}`, {
+                method: 'DELETE'
+            });
+            const asistenciasEliminadas = await response.json();
+            return asistenciasEliminadas;
+        } catch (error) {
+            console.error(`Error al eliminar las asistencias del empleado con ID ${id}:`, error);
+        }
+    }
+
+    async function deleteNominas(id) {
+        try {
+            const response = await fetch(`http://localhost:4000/API/nomina/empleado/${id}`, {
+                method: 'DELETE'
+            });
+            const nominasEliminadas = await response.json();
+            return nominasEliminadas;
+        } catch (error) {
+            console.error(`Error al eliminar las asistencias del empleado con ID ${id}:`, error);
         }
     }
 
@@ -31,13 +55,29 @@ function C_ModalElim(props) {
                     const borrarEmpleado = async (id) => {
                         try {
                             await deleteEmpleado(id);
-
                         } catch (error) {
                             console.error(`No fue posible eliminar al empleado en la BD \n${error}`);
                         }
                     }
+                    const borrarAsistencias = async (id) => {
+                        try {
+                            await deleteAsistencias(id);
+                        } catch (error) {
+                            console.error(`No fue posible eliminar las asistencias en la BD \n${error}`);
+                        }
+                    }
+                    const borrarNominas = async (id) => {
+                        try {
+                            await deleteNominas(id);
+                        } catch (error) {
+                            console.error(`No fue posible eliminar al empleado en la BD \n${error}`);
+                        }
+                    }
+                    borrarAsistencias(props.id);
+                    borrarNominas(props.id);
                     borrarEmpleado(props.id);
                     props.cerrarModal();
+                    message.success("Empleado eliminado correctamente");
                 }}
                 okType='danger'
                 cancelText='Conservar'

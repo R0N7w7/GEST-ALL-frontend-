@@ -3,6 +3,7 @@ import {
     Form,
     Input,
     Row,
+    message,
 } from 'antd';
 import { UserOutlined, AlignLeftOutlined, PhoneOutlined, DollarOutlined } from '@ant-design/icons';
 import { React, useState, useEffect } from 'react';
@@ -47,6 +48,7 @@ function C_FormEdit(props) {
                     }
                     actualizarEmpleado(values);
                     props.cerrarModal();
+                    message.success("Cambios guardados");
                 }}
             // * Si no se completan correctamente, arroja el error
             onFinishFailed={(error) => {
@@ -126,7 +128,7 @@ function C_FormEdit(props) {
                                 required: true,
                                 message: "Ingrese salario por hora",
                             },
-                            { pattern: /^\d{2}$/, message: 'Ingrese una cantidad válida' }
+                            { pattern: /^[0-9]{1,3}(\.[0-9]{1,2})?$/, message: 'Ingrese una cantidad válida' }
                         ]}
                         hasFeedback
                         style={{ marginRight: "5px" }}
@@ -145,7 +147,7 @@ function C_FormEdit(props) {
                                 required: true,
                                 message: "Ingrese salario por hora extra",
                             },
-                            { pattern: /^\d{2}$/, message: 'Ingrese una cantidad válida' }
+                            { pattern: /^[0-9]{1,3}(\.[0-9]{1,2})?$/, message: 'Ingrese una cantidad válida' }
                         ]}
                         hasFeedback
                         style={{ marginLeft: "5px" }}
