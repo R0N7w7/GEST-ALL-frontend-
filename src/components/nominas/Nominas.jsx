@@ -1,10 +1,11 @@
 import { React, useState, useEffect } from 'react';
-import { Table, Typography, Row, Col, Select, message, Card, Tooltip, Modal, Empty, InputNumber } from 'antd';
+import { Table, Typography, Row, Col, Select, message, Card, Tooltip, Modal, Empty, InputNumber, Button } from 'antd';
 import { DollarOutlined, SaveOutlined, DeleteOutlined } from '@ant-design/icons';
 import C_CardFechaRango from './CardFechaNom';
 import C_BonosDesc from './InputDineros';
 import C_CardSelector from './CardSelector';
 import "../Botones.css";
+import '../../assets/font.svg'
 
 const { Meta } = Card;
 //columnas
@@ -435,6 +436,11 @@ function C_Nominas() {
                         scroll={{ x: true }}
                         //* Las opciones de paginación fueron reemplazadas
                         pagination={paginationOptions}
+                        locale={{
+                            emptyText: <Empty description="" image='.\src\assets\nominasempty.svg'>
+                                <h1>Selecciona un rango o crea una nueva lista de nominas</h1>
+                            </Empty>
+                        }}
                     />
                 </Col>
                 <Col xs={24} sm={{ span: 16, offset: 4 }} md={{ span: 14, offset: 5 }} lg={{ span: 7, offset: 0 }} xl={{ span: 7, offset: 0 }}>
@@ -468,7 +474,7 @@ function C_Nominas() {
                                         style={{ width: "100%" }}
                                         id='selectRango'
                                         onChange={mostrarNominas}
-                                        notFoundContent={<Empty description="No hay nóminas para mostrar"></Empty>}
+                                        notFoundContent={<Empty description="No hay nóminas para mostrar" image='.\src\assets\noDataRange.svg'></Empty>}
                                         allowClear={true}
                                         value={seleccion}
                                     />

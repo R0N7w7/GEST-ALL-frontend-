@@ -417,7 +417,7 @@ function C_Asistencias() {
                         pagination={paginationOptions}
                         scroll={{ x: true }}
                         locale={{
-                            emptyText: <Empty description="">
+                            emptyText: <Empty description="" image='.\src\assets\asistenciasEmpty.svg'>
                                 <h1>No se han registrado asistencias</h1>
                                 <Button type='primary' onClick={(e) => generarAsistencias(e)}>Crear</Button>
                             </Empty>

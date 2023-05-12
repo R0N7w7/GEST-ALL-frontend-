@@ -55,6 +55,7 @@ function C_ModalElim(props) {
                     const borrarEmpleado = async (id) => {
                         try {
                             await deleteEmpleado(id);
+                            message.success("Empleado eliminado correctamente");
                         } catch (error) {
                             console.error(`No fue posible eliminar al empleado en la BD \n${error}`);
                         }
@@ -77,7 +78,6 @@ function C_ModalElim(props) {
                     borrarNominas(props.id);
                     borrarEmpleado(props.id);
                     props.cerrarModal();
-                    message.success("Empleado eliminado correctamente");
                 }}
                 okType='danger'
                 cancelText='Conservar'

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from 'react';
-import { Table, Typography, Space } from 'antd';
+import { Table, Typography, Space, Empty } from 'antd';
 import { UserOutlined, DollarOutlined } from '@ant-design/icons';
 import C_BtnDelete from "./EliminarButton";
 import C_BtnEdit from "./EditarButton";
@@ -19,6 +19,7 @@ function C_TablaEmpleados() {
     const [actualizar, setActualizar] = useState(true); //Sirve para indicar si debe actualizarce (redibujarse) la tabla
     const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(0); //Para mandarselo al fomrulario de editar
     const [empleadoEliminar, setEmpleadoEliminar] = useState(0); //Para mandarselo al fomrulario de editar
+    const [isLoading, setIsLoading] = useState(false);
 
 
     //Funcion que se trae todos los empleados de la BD
@@ -34,6 +35,7 @@ function C_TablaEmpleados() {
 
     //Función que actualiza la tabla
     async function actualizarDatosTabla() {
+        setIsLoading(true);
         const result = await getEmpleados();
         const env = result.map(empleado => {
             const { id_empleado, nombre, apellido_paterno, apellido_materno, telefono, salario_hora, salario_hora_extra } = empleado;
@@ -48,10 +50,12 @@ function C_TablaEmpleados() {
         });
         setData(env);
         setActualizar(true);
+        setIsLoading(false);
     }
 
     //se ejecuta para redibujar la tabla, cada vez que el state de actualizar se requiere poner a true
     useEffect(() => {
+        setIsLoading(true);
         if (actualizar) {
             const fetchData = async () => {
                 const result = await getEmpleados();
@@ -82,6 +86,7 @@ function C_TablaEmpleados() {
             fetchData();
             setActualizar(false);
         }
+        setIsLoading(false);
     }, [actualizar]);
 
     //Opciones de paginación de la tabla
@@ -144,6 +149,12 @@ function C_TablaEmpleados() {
                 dataSource={data}
                 pagination={paginationOptions}
                 scroll={{ x: true }}
+                locale={{
+                    emptyText: <Empty description="" image='.\src\assets\noEmpleados.svg'>
+                        <h1>Aún no hay registro de empleados</h1>
+                    </Empty>
+                }}
+                loading={isLoading}
             />
             {/* BOTÓN FLOTANTE PARA ABRIR EL MODAL */}
             <C_FButton onClick={() => setModalAddOpen(true)} />
